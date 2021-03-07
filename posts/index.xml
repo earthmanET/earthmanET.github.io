@@ -1,20 +1,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Posts on 粉红队长</title>
-        <link>https://pink.github.io/posts/</link>
+        <link>https://earthmanET.github.io/posts/</link>
         <description>Recent content in Posts on 粉红队长</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
         <lastBuildDate>Sun, 28 Feb 2021 01:39:39 +0800</lastBuildDate>
-        <atom:link href="https://pink.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="https://earthmanET.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
         
         <item>
             <title>滥用COM：COM组件劫持</title>
-            <link>https://pink.github.io/posts/2021/02/%E6%BB%A5%E7%94%A8comcom%E7%BB%84%E4%BB%B6%E5%8A%AB%E6%8C%81/</link>
+            <link>https://earthmanET.github.io/posts/2021/02/%E6%BB%A5%E7%94%A8comcom%E7%BB%84%E4%BB%B6%E5%8A%AB%E6%8C%81/</link>
             <pubDate>Sun, 28 Feb 2021 01:39:39 +0800</pubDate>
             
-            <guid>https://pink.github.io/posts/2021/02/%E6%BB%A5%E7%94%A8comcom%E7%BB%84%E4%BB%B6%E5%8A%AB%E6%8C%81/</guid>
+            <guid>https://earthmanET.github.io/posts/2021/02/%E6%BB%A5%E7%94%A8comcom%E7%BB%84%E4%BB%B6%E5%8A%AB%E6%8C%81/</guid>
             <description>COM劫持原理 COM是Component Object Model （组件对象模型）。是Windows上的一个系统，可以通过操作系统实现软件组件之间的交互。攻击者可以使用该系统，通过劫持COM引用和关系在合法软件中插入恶意代码，达成持久化目标。劫持COM对象需要修改Windows注册表，替换某个合法系统组件的引用，该操作可能导致该组件无法正常执行。当系统组件通过正常系统调用执行时，攻击者的代码就会被执行。攻击者可能会劫持频繁使用的对象，以维持一定程度的持久化驻留，但不大会破坏系统内的常见功能，避免系统出现不稳定状态导致攻击行为被发现。
 InprocServer32和LocalServer32（以及InprocServer和LocalServer）键值是COM服务（例如DLL、CPL、EXE和OCX）的引用点。一种常见的COM劫持方法是，将恶意DLL或者EXE文件放置到废弃的COM组件引用路径中。当COM组件通过正常系统调用执行时，攻击者的恶意代码就会被执行。该方法也是本文主要讨论的。
 另一种常见的方法是在程序读取注册表信息中的DLL或者EXE功能的路径上，做一个拦截，让程序提前读取我们的设置好的恶意DLL或者EXE。COM劫持原理在某种程度上近似于DLL劫持。
@@ -93,10 +93,10 @@ https://www.anquanke.com/post/id/179927
         
         <item>
             <title>DLL劫持及其漏洞挖掘</title>
-            <link>https://pink.github.io/posts/2021/02/dll%E5%8A%AB%E6%8C%81%E5%8F%8A%E5%85%B6%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/</link>
+            <link>https://earthmanET.github.io/posts/2021/02/dll%E5%8A%AB%E6%8C%81%E5%8F%8A%E5%85%B6%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/</link>
             <pubDate>Fri, 05 Feb 2021 23:11:55 +0800</pubDate>
             
-            <guid>https://pink.github.io/posts/2021/02/dll%E5%8A%AB%E6%8C%81%E5%8F%8A%E5%85%B6%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/</guid>
+            <guid>https://earthmanET.github.io/posts/2021/02/dll%E5%8A%AB%E6%8C%81%E5%8F%8A%E5%85%B6%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/</guid>
             <description>什么是DLL 动态链接库(Dynamic-Link-Library,缩写dll), 是微软公司在微软windows操作系统中实现共享函数库概念的一种实现方式。这些库函数的扩展名是.DLL、.OCX(包含ActiveX控制的库)或者.DRV(旧式的系统的驱动程序)
 DLL劫持一直深受黑客们的喜欢，利用此技术可以实现启动木马后门，游戏外挂插件的注入，绕过UAC等操作。
 DLL加载顺序 DLL是以文件的形式存在在硬盘中，Microsoft官方完整记录了DLL搜索顺序。
@@ -195,10 +195,10 @@ https://www.write-bug.com/article/1883.html
         
         <item>
             <title>Hackthebox-Worker-Writeup</title>
-            <link>https://pink.github.io/posts/2020/12/hackthebox-worker-writeup/</link>
+            <link>https://earthmanET.github.io/posts/2020/12/hackthebox-worker-writeup/</link>
             <pubDate>Sun, 27 Dec 2020 21:33:34 +0800</pubDate>
             
-            <guid>https://pink.github.io/posts/2020/12/hackthebox-worker-writeup/</guid>
+            <guid>https://earthmanET.github.io/posts/2020/12/hackthebox-worker-writeup/</guid>
             <description>端口扫描，只有两个开放端口80，3690 尝试使用dirsearch目录fuzz，没有找到什么有用的信息 使用nmap自带的svn暴力脚本验证登录，发现开启了匿名登录权限 SVN信息收集 其中，moved.txt中存在一个地址“http://devops.worker.htb” 先将该地址添加到“/etc/hosts”中，然后访问该地址，需要账号密码 使用“svn checkout -r 2 svn://10.10.10.203”从每个版本的仓库中寻找文件副本，并发现了deploy.ps1 打开发现用户名和密码 使用该凭证可成功登录到http://devops.worker.htb/ 在SmartHotel360-&amp;gt;Repos-&amp;gt;Files中有文件上传功能，但无法直接上传文件 需要先创建一个branch再上传文件 上传webshell，这里用了一个反向连接的Webshell 上传成功后发布一个pull请求，将shell.aspx加载到spectral.worker.htb 将spectral.worker.htb添加到hosts文件中，然后访问http://spectral.worker.htb/shell.aspx
 在本机上用nc开启监听，成功返回shell 使用winPEAS.exe扫描系统，发现了另一个系统盘
 并在其中找到账号密码robisl:wolves11 通过winrm登录，并找到user.txt
@@ -251,10 +251,10 @@ https://www.write-bug.com/article/1883.html
         
         <item>
             <title>Hackthebox-Fuse-Writeup</title>
-            <link>https://pink.github.io/posts/2020/12/hackthebox-fuse-writeup/</link>
+            <link>https://earthmanET.github.io/posts/2020/12/hackthebox-fuse-writeup/</link>
             <pubDate>Tue, 01 Dec 2020 18:07:23 +0800</pubDate>
             
-            <guid>https://pink.github.io/posts/2020/12/hackthebox-fuse-writeup/</guid>
+            <guid>https://earthmanET.github.io/posts/2020/12/hackthebox-fuse-writeup/</guid>
             <description>端口扫描，发现80端口开放 修改/etc/hosts 获得用户名：
 pmerton tlavel sthompson bhult administrator 保存为用户名字典文件user.txt
 生成字典
@@ -330,10 +330,10 @@ https://cloud.tencent.com/developer/article/1180772
         
         <item>
             <title>构建简单的匿名IP代理池（一）</title>
-            <link>https://pink.github.io/posts/2018/09/%E6%9E%84%E5%BB%BA%E7%AE%80%E5%8D%95%E7%9A%84%E5%8C%BF%E5%90%8Dip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B8%80/</link>
+            <link>https://earthmanET.github.io/posts/2018/09/%E6%9E%84%E5%BB%BA%E7%AE%80%E5%8D%95%E7%9A%84%E5%8C%BF%E5%90%8Dip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B8%80/</link>
             <pubDate>Sun, 16 Sep 2018 18:38:19 +0000</pubDate>
             
-            <guid>https://pink.github.io/posts/2018/09/%E6%9E%84%E5%BB%BA%E7%AE%80%E5%8D%95%E7%9A%84%E5%8C%BF%E5%90%8Dip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B8%80/</guid>
+            <guid>https://earthmanET.github.io/posts/2018/09/%E6%9E%84%E5%BB%BA%E7%AE%80%E5%8D%95%E7%9A%84%E5%8C%BF%E5%90%8Dip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B8%80/</guid>
             <description>当我们对目标网络进行漏洞扫描，或者使用sqlmap对目标网站进行注入攻击时，常常因为请求频率过高导致ip被ban，这个时候我们可以通过代理池来避免这种情况的发生，同时增加我们的隐蔽性。
 构建IP代理池首先需要获取多个可靠的代理IP，思路如下
  到免费的代理网站爬取代理IP 验证IP的有效性和匿名性 将有效的IP地址记录保存下来  具体实现：
@@ -441,10 +441,10 @@ writer<span style="color:#f92672">=</span>csv<span style="color:#f92672">.</span
         
         <item>
             <title>利用zoomeye API批量收集漏洞目标</title>
-            <link>https://pink.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%89%B9%E9%87%8F%E6%94%B6%E9%9B%86%E6%BC%8F%E6%B4%9E%E7%9B%AE%E6%A0%87/</link>
+            <link>https://earthmanET.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%89%B9%E9%87%8F%E6%94%B6%E9%9B%86%E6%BC%8F%E6%B4%9E%E7%9B%AE%E6%A0%87/</link>
             <pubDate>Thu, 30 Aug 2018 15:03:17 +0000</pubDate>
             
-            <guid>https://pink.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%89%B9%E9%87%8F%E6%94%B6%E9%9B%86%E6%BC%8F%E6%B4%9E%E7%9B%AE%E6%A0%87/</guid>
+            <guid>https://earthmanET.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%89%B9%E9%87%8F%E6%94%B6%E9%9B%86%E6%BC%8F%E6%B4%9E%E7%9B%AE%E6%A0%87/</guid>
             <description>与上一篇 利用zoomeye API收集存在弱口令的Hikvision网络摄像头 原理相似。
 zoomeye API的使用可以参考ZoomEye API 参考手册
 这里以7月份披露的一个weblogic反序列漏洞CVE-2018-2894为例
@@ -615,10 +615,10 @@ def proof(dip,dport,index):
         
         <item>
             <title>利用zoomeye API收集存在弱口令的Hikvision网络摄像头</title>
-            <link>https://pink.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%94%B6%E9%9B%86%E5%AD%98%E5%9C%A8%E5%BC%B1%E5%8F%A3%E4%BB%A4%E7%9A%84hikvision%E7%BD%91%E7%BB%9C%E6%91%84%E5%83%8F%E5%A4%B4/</link>
+            <link>https://earthmanET.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%94%B6%E9%9B%86%E5%AD%98%E5%9C%A8%E5%BC%B1%E5%8F%A3%E4%BB%A4%E7%9A%84hikvision%E7%BD%91%E7%BB%9C%E6%91%84%E5%83%8F%E5%A4%B4/</link>
             <pubDate>Sat, 25 Aug 2018 18:08:12 +0000</pubDate>
             
-            <guid>https://pink.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%94%B6%E9%9B%86%E5%AD%98%E5%9C%A8%E5%BC%B1%E5%8F%A3%E4%BB%A4%E7%9A%84hikvision%E7%BD%91%E7%BB%9C%E6%91%84%E5%83%8F%E5%A4%B4/</guid>
+            <guid>https://earthmanET.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%94%B6%E9%9B%86%E5%AD%98%E5%9C%A8%E5%BC%B1%E5%8F%A3%E4%BB%A4%E7%9A%84hikvision%E7%BD%91%E7%BB%9C%E6%91%84%E5%83%8F%E5%A4%B4/</guid>
             <description>通过zoomeye提供的强大的API，我们能够更好的与平台相连接，使用zoomeye平台提供的各种资源。对于zoomeye API的使用可以参考ZoomEye API 参考手册
 旧版本的海康威视网络摄像头默认账号密码为：admin/12345
 通过抓包发现认证的路径为/ISAPI/Security/userCheck，认证方式为http basic认证
@@ -719,10 +719,10 @@ def proof(dip,dport,index):
         
         <item>
             <title>java文件断点续传的简单实现</title>
-            <link>https://pink.github.io/posts/2018/01/java%E6%96%87%E4%BB%B6%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0/</link>
+            <link>https://earthmanET.github.io/posts/2018/01/java%E6%96%87%E4%BB%B6%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0/</link>
             <pubDate>Sat, 20 Jan 2018 18:08:12 +0000</pubDate>
             
-            <guid>https://pink.github.io/posts/2018/01/java%E6%96%87%E4%BB%B6%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0/</guid>
+            <guid>https://earthmanET.github.io/posts/2018/01/java%E6%96%87%E4%BB%B6%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0/</guid>
             <description>前段时间因任务需要本人这个java渣渣开始研究如何用java实现简单的文件断点续传。所谓的文件断点续传，我的理解是文件在传输过程中因为某些原因程序停止运行文件终止传输，下一次重新传输文件的时候还能从上一次传输的位置开始传输，而不需要重新从头开始。
 文件传输的过程分为发送方和接收方，最终我的思路是这样的：
  传输开始之前发送方先向接收方发送一个确认信息，然后再向接收方发送准备发送的文件的文件名 接收方收到确认信息之后，接收从发送方发送过来的文件名，接收完之后向发送方发送一个确认信息表示文件名接收完毕，然后接收方根据收到的文件名创建一个“.temp”File对象和一个“.temp”RandomAccessFile对象。获取这个File对象所对应文件的长度（大小）（这个长度就是接收方已经接受的长度，如果之前没有接收过这个文件，长度就为0），并把文件长度发送给发送方。 发送方收到确认信息之后，接收接受方发送的文件长度，然后向接收方发送准备发送的文件的总长度，并向接收方发送一个确认信息。然后根据接收方发送的文件长度，从文件对应长度的位置开始发送。 接收方收到确认信息之后，接受发送方发送过来的数据，然后从此文件的末尾写入。接受完成之后再将“.temp”文件重命名为正常的文件名。  把过程画成图就是下面这样：

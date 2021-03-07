@@ -2,72 +2,72 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://pink.github.io/cn/categories/</loc>
+    <loc>https://earthmanET.github.io/cn/categories/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://pink.github.io/categories/"
+                href="https://earthmanET.github.io/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://pink.github.io/fr/categories/"
+                href="https://earthmanET.github.io/fr/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="https://pink.github.io/cn/categories/"
+                href="https://earthmanET.github.io/cn/categories/"
                 />
   </url><url>
-    <loc>https://pink.github.io/cn/series/</loc>
+    <loc>https://earthmanET.github.io/cn/series/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://pink.github.io/series/"
+                href="https://earthmanET.github.io/series/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://pink.github.io/fr/series/"
+                href="https://earthmanET.github.io/fr/series/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="https://pink.github.io/cn/series/"
+                href="https://earthmanET.github.io/cn/series/"
                 />
   </url><url>
-    <loc>https://pink.github.io/cn/tags/</loc>
+    <loc>https://earthmanET.github.io/cn/tags/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://pink.github.io/tags/"
+                href="https://earthmanET.github.io/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://pink.github.io/fr/tags/"
+                href="https://earthmanET.github.io/fr/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="https://pink.github.io/cn/tags/"
+                href="https://earthmanET.github.io/cn/tags/"
                 />
   </url><url>
-    <loc>https://pink.github.io/cn/</loc>
+    <loc>https://earthmanET.github.io/cn/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://pink.github.io/"
+                href="https://earthmanET.github.io/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://pink.github.io/fr/"
+                href="https://earthmanET.github.io/fr/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="https://pink.github.io/cn/"
+                href="https://earthmanET.github.io/cn/"
                 />
   </url>
 </urlset>
