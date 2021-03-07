@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>java on 粉红队长</title>
+    <link>https://pink.github.io/tags/java/</link>
+    <description>Recent content in java on 粉红队长</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <lastBuildDate>Sat, 20 Jan 2018 18:08:12 +0000</lastBuildDate><atom:link href="https://pink.github.io/tags/java/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>java文件断点续传的简单实现</title>
+      <link>https://pink.github.io/posts/2018/01/java%E6%96%87%E4%BB%B6%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0/</link>
+      <pubDate>Sat, 20 Jan 2018 18:08:12 +0000</pubDate>
+      
+      <guid>https://pink.github.io/posts/2018/01/java%E6%96%87%E4%BB%B6%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0/</guid>
+      <description>前段时间因任务需要本人这个java渣渣开始研究如何用java实现简单的文件断点续传。所谓的文件断点续传，我的理解是文件在传输过程中因为某些原因程序停止运行文件终止传输，下一次重新传输文件的时候还能从上一次传输的位置开始传输，而不需要重新从头开始。
+文件传输的过程分为发送方和接收方，最终我的思路是这样的：
+ 传输开始之前发送方先向接收方发送一个确认信息，然后再向接收方发送准备发送的文件的文件名 接收方收到确认信息之后，接收从发送方发送过来的文件名，接收完之后向发送方发送一个确认信息表示文件名接收完毕，然后接收方根据收到的文件名创建一个“.temp”File对象和一个“.temp”RandomAccessFile对象。获取这个File对象所对应文件的长度（大小）（这个长度就是接收方已经接受的长度，如果之前没有接收过这个文件，长度就为0），并把文件长度发送给发送方。 发送方收到确认信息之后，接收接受方发送的文件长度，然后向接收方发送准备发送的文件的总长度，并向接收方发送一个确认信息。然后根据接收方发送的文件长度，从文件对应长度的位置开始发送。 接收方收到确认信息之后，接受发送方发送过来的数据，然后从此文件的末尾写入。接受完成之后再将“.temp”文件重命名为正常的文件名。  把过程画成图就是下面这样：
+“ok”表示确认信息
+能够实现断点续传的关键就是使用了RandomAccessFile，此类的实例支持对随机访问文件的读取和写入。
+加入一些如进度条、文件选择器之类的GUI，最终的主要代码如下：
+发送方线程：
+import java.awt.Color; import java.awt.Container; import java.awt.Dimension; import java.awt.FlowLayout; import java.awt.event.ActionEvent; import java.awt.event.ActionListener; import java.io.DataInputStream; import java.io.DataOutputStream; import java.io.File; import java.io.IOException; import java.io.RandomAccessFile; import java.net.Socket; import javax.swing.BoxLayout; import javax.swing.JButton; import javax.swing.JFileChooser; import javax.swing.JFrame; import javax.swing.JLabel; import javax.swing.JOptionPane; import javax.swing.JPanel; import javax.swing.JProgressBar; public class SendFileThread extends Thread{ private Socket socket=null; private DataOutputStream dos; private DataInputStream dis; private RandomAccessFile rad; private Container contentPanel; private JFrame frame; private JProgressBar progressbar; private JLabel label; public SendFileThread(){ frame=new JFrame(&amp;#34;文件传输&amp;#34;); try { socket=new Socket(&amp;#34;localhost&amp;#34;, 8080); } catch (IOException e) { // TODO Auto-generated catch block 	e.</description>
+    </item>
+    
+  </channel>
+</rss>

