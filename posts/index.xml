@@ -6,8 +6,69 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Sun, 28 Feb 2021 01:39:39 +0800</lastBuildDate>
+        <lastBuildDate>Sun, 24 Jul 2022 18:11:55 +0800</lastBuildDate>
         <atom:link href="https://earthmanET.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Suricata&#43;Logstash&#43;Yara实现基于流量的实时恶意文件扫描</title>
+            <link>https://earthmanET.github.io/posts/2022/07/suricata-logstash-yara%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B5%81%E9%87%8F%E7%9A%84%E5%AE%9E%E6%97%B6%E6%81%B6%E6%84%8F%E6%96%87%E4%BB%B6%E6%89%AB%E6%8F%8F/</link>
+            <pubDate>Sun, 24 Jul 2022 18:11:55 +0800</pubDate>
+            
+            <guid>https://earthmanET.github.io/posts/2022/07/suricata-logstash-yara%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B5%81%E9%87%8F%E7%9A%84%E5%AE%9E%E6%97%B6%E6%81%B6%E6%84%8F%E6%96%87%E4%BB%B6%E6%89%AB%E6%8F%8F/</guid>
+            <description>基本原理  通过suricata实现对网络流量的实时文件提取，并通过logstash实时将文件路径和文件信息传输给yara检查接口，yara检查接口通过调用yara规则实现对文件的实时检测。
+Suricata文件提取  Suricata本身支持文件提取功能，只需要配置suricata.yaml中相关的配置项，并构建相应的文件提取规则，Suricata即可基于规则实现对网络流量的文件提取。具体的配置过程可参考Suricata官方文档的File Extraction部分： https://suricata.readthedocs.io/en/latest/file-extraction/file-extraction.html
+logstash日志采集  logstash在其中主要起到日志采集的功能，用于采集Suricata生成的文件日志信息并输出到文件检测端，用其他日志采集方法代替也可以，例如轻量化的filebeat。
+yara规则匹配  YARA是一个旨在帮助恶意软件研究人员识别和分类恶意软件样本的工具。使用YARA，可以基于文本或二进制模式创建恶意软件家族（或任何您想要描述的内容）的描述，也就是规则。每个规则，由一组字符串和一个布尔表达式组成，这些表达式决定了它的逻辑。通过规则匹配实现对恶意软件的检测。
+具体实现 suricata.yaml配置  主要配置三个地方：
+ eve-log中的files配置项开启fileinfo日志记录 file-store中的enabled改为yes开启文件提取功能 Stream中depth可适当调高(该值表示控制流重组完成的程度，流大小超过此值同样会被截断)  文件提取规则构建  文件提取规则的写法与其他种类Suricata规则的语法是相同的，具体规则使用的相关字段可以参考官方文档中关于规则体File Keywords部分的内容：https://suricata.readthedocs.io/en/latest/rules/file-keywords.html
+ 以下是一些Suricata文件提取规则示例：
+pass http any any -&amp;gt; any any (msg:&amp;quot;FILE docx file claimed&amp;quot;; fileext:&amp;quot;docx&amp;quot;; filestore; sid:2; rev:1;)pass http any any -&amp;gt; any any (msg:&amp;quot;FILESTORE jpg&amp;quot;; fileext:&amp;quot;jpg&amp;quot;; filestore; sid:3; rev:1;)pass http any any -&amp;gt; any any (msg:&amp;quot;FILESTORE jpg&amp;quot;; fileext:&amp;quot;jpeg&amp;quot;; filestore; sid:4; rev:1;)文件提取  在提取文件时，suricata以文件的SHA256命名文件，然后将每个文件放在suricata目录下的/logs/filestore路径下名为00到ff的文件夹中，该文件夹名与相应的文件名的前2个字符对应（即文件SHA256哈希值的前两位）。例如，如果所提取的文件的SHA256十六进制字符串以“f9bc6d&amp;hellip;”开头，则我们将文件放置在目录 filestore/f9中。</description>
+            <content type="html"><![CDATA[<h1 id="基本原理">基本原理</h1>
+<p>  通过suricata实现对网络流量的实时文件提取，并通过logstash实时将文件路径和文件信息传输给yara检查接口，yara检查接口通过调用yara规则实现对文件的实时检测。</p>
+<h2 id="suricata文件提取">Suricata文件提取</h2>
+<p>  Suricata本身支持文件提取功能，只需要配置suricata.yaml中相关的配置项，并构建相应的文件提取规则，Suricata即可基于规则实现对网络流量的文件提取。具体的配置过程可参考Suricata官方文档的File Extraction部分：
+<a href="https://suricata.readthedocs.io/en/latest/file-extraction/file-extraction.html">https://suricata.readthedocs.io/en/latest/file-extraction/file-extraction.html</a></p>
+<h2 id="logstash日志采集">logstash日志采集</h2>
+<p>  logstash在其中主要起到日志采集的功能，用于采集Suricata生成的文件日志信息并输出到文件检测端，用其他日志采集方法代替也可以，例如轻量化的filebeat。</p>
+<h2 id="yara规则匹配">yara规则匹配</h2>
+<p>  YARA是一个旨在帮助恶意软件研究人员识别和分类恶意软件样本的工具。使用YARA，可以基于文本或二进制模式创建恶意软件家族（或任何您想要描述的内容）的描述，也就是规则。每个规则，由一组字符串和一个布尔表达式组成，这些表达式决定了它的逻辑。通过规则匹配实现对恶意软件的检测。</p>
+<h1 id="具体实现">具体实现</h1>
+<h2 id="suricatayaml配置">suricata.yaml配置</h2>
+<p>  主要配置三个地方：</p>
+<ul>
+<li>eve-log中的files配置项开启fileinfo日志记录</li>
+<li>file-store中的enabled改为yes开启文件提取功能</li>
+<li>Stream中depth可适当调高(该值表示控制流重组完成的程度，流大小超过此值同样会被截断)</li>
+</ul>
+<h2 id="文件提取规则构建">文件提取规则构建</h2>
+<p>  文件提取规则的写法与其他种类Suricata规则的语法是相同的，具体规则使用的相关字段可以参考官方文档中关于规则体File Keywords部分的内容：https://suricata.readthedocs.io/en/latest/rules/file-keywords.html</p>
+<p>  以下是一些Suricata文件提取规则示例：</p>
+<pre><code>pass http any any -&gt; any any (msg:&quot;FILE docx file claimed&quot;; fileext:&quot;docx&quot;; filestore; sid:2; rev:1;)
+pass http any any -&gt; any any (msg:&quot;FILESTORE jpg&quot;; fileext:&quot;jpg&quot;; filestore; sid:3; rev:1;)
+pass http any any -&gt; any any (msg:&quot;FILESTORE jpg&quot;; fileext:&quot;jpeg&quot;; filestore; sid:4; rev:1;)
+</code></pre><h2 id="文件提取">文件提取</h2>
+<p>  在提取文件时，suricata以文件的SHA256命名文件，然后将每个文件放在suricata目录下的/logs/filestore路径下名为00到ff的文件夹中，该文件夹名与相应的文件名的前2个字符对应（即文件SHA256哈希值的前两位）。例如，如果所提取的文件的SHA256十六进制字符串以“f9bc6d&hellip;”开头，则我们将文件放置在目录 filestore/f9中。</p>
+<p>  如果Suricata.yaml配置了files项，Suricata会记录流量中包含的文件的元数据并生成event_type为fileinfo的日志数据，fileinfo日志格式如下图所示。该日志包含了关于文件的主要信息和传输该文件的网络流量信息。在实际应用中，这些信息可以用于生成描述恶意软件的警报日志。
+<img src="/5/1.png" alt=""></p>
+<h2 id="恶意文件扫描">恶意文件扫描</h2>
+<p>  可以使用yara-python库基于python实现恶意文件扫描功能。并基于tornado之类的Web框架实现http接口，通过http接口实时接收来自Logstash的文件日志（fileinfo日志），并对日志中关联的文件进行yara规则匹配，最终对匹配到的结果生成警报日志。具体来说：</p>
+<ol>
+<li>通过http接口实时接收来自Logstash的文件日志。</li>
+<li>通过每条日志的“stored”项判断该文件是否被提取，true表示该文件被提取并保存，false表示该文件没有被提取。</li>
+<li>对于被提取的文件，通过日志中提供的sha256哈希值定位文件的路径。</li>
+<li>调用python-yara库并使用预定义的yara规则对文件做规则匹配。</li>
+<li>对于符合要求的匹配结果生成警报日志并输出。</li>
+</ol>
+<h2 id="日志采集">日志采集</h2>
+<p>  Logstash用于实时监听Suricata产生的警报数据，对于event_type为fileinfo的日志，Logstash将其通过HTTP输出到恶意文件扫描接口中进行恶意文件扫描。Logstash同时也实时监听恶意文件扫描生成的警报日志数据，并输出到指定elasticsearch数据库中。Logstash具体的配置方法可参考相应版本的官方文档：https://www.elastic.co/guide/en/logstash/current/index.html</p>
+<h1 id="参考资料">参考资料</h1>
+<ul>
+<li><a href="https://suricata.readthedocs.io/en/latest/what-is-suricata.html">https://suricata.readthedocs.io/en/latest/what-is-suricata.html</a></li>
+<li><a href="https://virustotal.github.io/yara/">https://virustotal.github.io/yara/</a></li>
+<li><a href="https://www.elastic.co/guide/en/logstash/current/index.html">https://www.elastic.co/guide/en/logstash/current/index.html</a></li>
+</ul>
+]]></content>
+        </item>
         
         <item>
             <title>滥用COM：COM组件劫持</title>

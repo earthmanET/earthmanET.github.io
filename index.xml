@@ -7,7 +7,23 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Sun, 28 Feb 2021 01:39:39 +0800</lastBuildDate><atom:link href="https://earthmanET.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 24 Jul 2022 18:11:55 +0800</lastBuildDate><atom:link href="https://earthmanET.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Suricata&#43;Logstash&#43;Yara实现基于流量的实时恶意文件扫描</title>
+      <link>https://earthmanET.github.io/posts/2022/07/suricata-logstash-yara%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B5%81%E9%87%8F%E7%9A%84%E5%AE%9E%E6%97%B6%E6%81%B6%E6%84%8F%E6%96%87%E4%BB%B6%E6%89%AB%E6%8F%8F/</link>
+      <pubDate>Sun, 24 Jul 2022 18:11:55 +0800</pubDate>
+      
+      <guid>https://earthmanET.github.io/posts/2022/07/suricata-logstash-yara%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B5%81%E9%87%8F%E7%9A%84%E5%AE%9E%E6%97%B6%E6%81%B6%E6%84%8F%E6%96%87%E4%BB%B6%E6%89%AB%E6%8F%8F/</guid>
+      <description>基本原理  通过suricata实现对网络流量的实时文件提取，并通过logstash实时将文件路径和文件信息传输给yara检查接口，yara检查接口通过调用yara规则实现对文件的实时检测。
+Suricata文件提取  Suricata本身支持文件提取功能，只需要配置suricata.yaml中相关的配置项，并构建相应的文件提取规则，Suricata即可基于规则实现对网络流量的文件提取。具体的配置过程可参考Suricata官方文档的File Extraction部分： https://suricata.readthedocs.io/en/latest/file-extraction/file-extraction.html
+logstash日志采集  logstash在其中主要起到日志采集的功能，用于采集Suricata生成的文件日志信息并输出到文件检测端，用其他日志采集方法代替也可以，例如轻量化的filebeat。
+yara规则匹配  YARA是一个旨在帮助恶意软件研究人员识别和分类恶意软件样本的工具。使用YARA，可以基于文本或二进制模式创建恶意软件家族（或任何您想要描述的内容）的描述，也就是规则。每个规则，由一组字符串和一个布尔表达式组成，这些表达式决定了它的逻辑。通过规则匹配实现对恶意软件的检测。
+具体实现 suricata.yaml配置  主要配置三个地方：
+ eve-log中的files配置项开启fileinfo日志记录 file-store中的enabled改为yes开启文件提取功能 Stream中depth可适当调高(该值表示控制流重组完成的程度，流大小超过此值同样会被截断)  文件提取规则构建  文件提取规则的写法与其他种类Suricata规则的语法是相同的，具体规则使用的相关字段可以参考官方文档中关于规则体File Keywords部分的内容：https://suricata.readthedocs.io/en/latest/rules/file-keywords.html
+ 以下是一些Suricata文件提取规则示例：
+pass http any any -&amp;gt; any any (msg:&amp;quot;FILE docx file claimed&amp;quot;; fileext:&amp;quot;docx&amp;quot;; filestore; sid:2; rev:1;)pass http any any -&amp;gt; any any (msg:&amp;quot;FILESTORE jpg&amp;quot;; fileext:&amp;quot;jpg&amp;quot;; filestore; sid:3; rev:1;)pass http any any -&amp;gt; any any (msg:&amp;quot;FILESTORE jpg&amp;quot;; fileext:&amp;quot;jpeg&amp;quot;; filestore; sid:4; rev:1;)文件提取  在提取文件时，suricata以文件的SHA256命名文件，然后将每个文件放在suricata目录下的/logs/filestore路径下名为00到ff的文件夹中，该文件夹名与相应的文件名的前2个字符对应（即文件SHA256哈希值的前两位）。例如，如果所提取的文件的SHA256十六进制字符串以“f9bc6d&amp;hellip;”开头，则我们将文件放置在目录 filestore/f9中。</description>
+    </item>
+    
     <item>
       <title>About</title>
       <link>https://earthmanET.github.io/about/</link>
